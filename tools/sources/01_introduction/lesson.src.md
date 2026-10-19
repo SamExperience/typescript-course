@@ -1,0 +1,374 @@
+<!-- cell: markdown -->
+# TypeScript — Introduction
+
+> **How these notebooks work**
+>
+> - Each lesson has six parts: **Explanation**, **Key Notes**, **Example**, **Exercise**,
+>   **Verification** and **Mini Challenge**.
+> - Run the cells from top to bottom, starting with the helper cell below.
+> - **Running a cell does not check types.** To see type errors, run this from the
+>   `playground` folder (one-time setup in the README):
+>
+>   ```bash
+>   npm run check:nb -- ../01_introduction/lesson.ipynb
+>   ```
+>
+>   Cells that start with `// Type error on purpose` are listed as `[expected]`.
+
+<!-- cell: code setup -->
+// Course helper: run this cell once, before any Verification cell.
+// checkAll prints PASS or FAIL for each [label, actual value, expected value] case.
+// You don't need to understand how it works yet.
+function checkAll(cases: [string, unknown, unknown][]): void {
+  const lines = cases.map(([label, actual, expected]) =>
+    JSON.stringify(actual) === JSON.stringify(expected)
+      ? `PASS  ${label}`
+      : `FAIL  ${label} — expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`,
+  );
+  console.log(lines.join("\n"));
+}
+
+<!-- cell: markdown -->
+## LESSON 1 — What TypeScript is and why it exists
+
+### Explanation
+
+**TypeScript is JavaScript with types.** A type says what kind of value something is: a
+number, a string, an object. You add types to your code, and the **TypeScript compiler**
+checks them *before the code runs*.
+
+**Why it exists.** JavaScript often handles a wrong value silently:
+
+```typescript
+const price = "20"; // form fields give you strings
+console.log(price + 5); // prints 205, not 25
+```
+
+Nothing crashes, so the bug goes unnoticed. In a large codebase, nobody remembers what every
+function expects. TypeScript writes those expectations into the code, and the compiler checks
+every call.
+
+**TypeScript vs JavaScript.** Same syntax, plus types. This is a **type annotation**:
+
+```typescript
+function addShipping(price: number, shipping: number) {
+  return price + shipping;
+}
+```
+
+`price: number` means "this parameter must be a number", so `addShipping("20", 5)` is an
+error. For now you only need to read annotations. You'll write your own from LESSON 8.
+
+**Types are removed before the code runs.** What actually runs is plain JavaScript. That's
+why a notebook cell with a type error still runs.
+
+### Key Notes
+
+- TypeScript = JavaScript + types.
+- The compiler reports type errors **before** the code runs.
+- `price: number` is a type annotation: only numbers are allowed.
+- Types are removed before running. At runtime, it's plain JavaScript.
+
+### Example
+
+<!-- cell: code type-error-demo -->
+// Type error on purpose.
+const l1PriceFromForm = "20"; // form fields give you strings
+const l1Shipping = 5;
+
+function l1AddShipping(price: number, shipping: number) {
+  return price + shipping;
+}
+
+// Compiler: Argument of type 'string' is not assignable to parameter of type 'number'.
+console.log(l1AddShipping(l1PriceFromForm, l1Shipping)); // prints 205: the kernel runs it anyway
+
+<!-- cell: code example -->
+// The fix: turn the string into a number before the call.
+console.log(l1AddShipping(Number(l1PriceFromForm), l1Shipping)); // prints 25
+
+<!-- cell: markdown -->
+### Exercise
+
+A checkout form sends every value as a string. In the cell below:
+
+1. Complete `l1OrderTotal` so it returns `price * quantity + shipping`.
+2. Set `l1Total` by calling `l1OrderTotal` with the values from `l1Form`. The parameters are
+   numbers, so convert the strings first.
+3. Try passing `l1Form.price` without converting it and run the cell. What prints? Put the
+   conversion back afterwards.
+
+Don't open `solutions.ipynb` until you've genuinely tried.
+
+<!-- cell: code starter -->
+const l1Form = { price: "24.50", quantity: "2", shipping: "4.50" };
+
+function l1OrderTotal(price: number, quantity: number, shipping: number) {
+  // TODO: return the cost of all the items plus shipping
+  return 0;
+}
+
+// TODO: call l1OrderTotal with the form values, converted to numbers
+const l1Total = 0;
+
+console.log(l1Total);
+
+<!-- cell: markdown -->
+### Verification
+
+Run your exercise cell, then this cell. Every line should print `PASS`.
+
+<!-- cell: code verification -->
+checkAll([
+  ["total for the form order", l1Total, 53.5],
+  ["3 items at 10, plus 4 shipping", l1OrderTotal(10, 3, 4), 34],
+  ["free items, shipping only", l1OrderTotal(0, 5, 4), 4],
+]);
+
+<!-- cell: markdown -->
+### Mini Challenge
+
+The cell below defines two annotated functions. For each call, predict: does the compiler
+report it, and what does JavaScript print?
+
+```text
+1. l1ApplyFee(100, 2)
+2. l1ApplyFee("100", 2)
+3. l1Discount("80", 25)
+4. l1Discount(Number("80"), 25)
+```
+
+Write your predictions as comments. Then test them: add the calls, run the cell, run
+`check:nb`, and delete the reported calls.
+
+Last question: call 3 prints the correct discount. Why is it still good that the compiler
+reports it?
+
+<!-- cell: code challenge -->
+function l1ApplyFee(amount: number, fee: number) {
+  return amount + fee;
+}
+
+function l1Discount(price: number, percent: number) {
+  return price - (price * percent) / 100;
+}
+
+// Your predictions here
+
+<!-- cell: markdown -->
+## LESSON 2 — Benefits, limitations, and when TypeScript is useful
+
+### Explanation
+
+**Benefits**
+
+- **Early errors.** Wrong value types, missing arguments and misspelled property names are
+  reported before the code runs.
+- **Editor help.** Your editor knows the types, so it suggests property names and underlines
+  mistakes as you type.
+- **Safer changes.** Rename a property or add a parameter, and the compiler lists every line
+  that needs updating.
+- **Types document the code.** `refund(orderId: string, amount: number)` tells you how to
+  call the function without reading its body.
+
+**Limitations**
+
+- **It doesn't check your logic.** `price * 0.2` and `price * 0.8` are both numbers. The
+  compiler can't know which one you meant.
+- **It doesn't check data while the program runs.** Form input and API responses arrive at
+  runtime, when the types are already gone. LESSON 11 covers this.
+- **It adds a step.** You write some extra syntax and run the compiler.
+
+**When it's useful.** The bigger and longer-lived the code, the more TypeScript pays off:
+several developers, many functions calling each other, code that keeps changing. For a short
+script you run once, plain JavaScript is often enough.
+
+### Key Notes
+
+- The compiler catches type mistakes: wrong types, missing arguments, misspelled properties.
+- It doesn't catch logic mistakes. You still need checks and tests.
+- Data that arrives at runtime isn't checked automatically.
+- TypeScript pays off most in large, shared, long-lived code.
+
+### Example
+
+Three mistakes that JavaScript runs without complaint. The compiler reports all three.
+
+<!-- cell: code type-error-demo -->
+// Type error on purpose (three of them).
+function l2Refund(orderId: string, amount: number) {
+  return `Refund ${amount} EUR for order ${orderId}`;
+}
+
+// TypeScript works out this object's properties from its value (more in LESSON 8).
+const l2Order = { id: "A-100", total: 59.9 };
+
+// Compiler: Expected 2 arguments, but got 1.
+console.log(l2Refund(l2Order.id));
+
+// Compiler: Property 'totl' does not exist on type '{ id: string; total: number; }'. Did you mean 'total'?
+console.log(l2Refund(l2Order.id, l2Order.totl));
+
+// Compiler: Argument of type 'number' is not assignable to parameter of type 'string'.
+console.log(l2Refund(l2Order.total, l2Order.id));
+
+<!-- cell: markdown -->
+And one mistake the compiler can't see, because every type is correct:
+
+<!-- cell: code example -->
+// A 20% discount should keep 80% of the price.
+function l2ApplyDiscount(price: number) {
+  return price * 0.2; // logic bug: should be price * 0.8
+}
+
+console.log(l2ApplyDiscount(50)); // prints 10 instead of 40, and the compiler reports nothing
+
+<!-- cell: markdown -->
+### Exercise
+
+The shop's rule: **orders of 50 EUR or more ship for free; smaller orders pay 4.90 EUR.**
+
+1. `l2ShippingCost` has no type errors, but it breaks that rule. Run the Verification cell to
+   find the failing case, then fix the function.
+2. For each bug listed in `l2CaughtByCompiler`, set `true` if the compiler reports it, or
+   `false` if only a runtime check (like the Verification cell) would catch it.
+
+Don't open `solutions.ipynb` until you've genuinely tried.
+
+<!-- cell: code starter -->
+// Shop rule: orders of 50 EUR or more ship for free. Smaller orders pay 4.90 EUR.
+function l2ShippingCost(total: number) {
+  if (total > 50) {
+    return 0;
+  }
+  return 4.9;
+}
+
+// true = the compiler reports it, false = only a runtime check would catch it
+const l2CaughtByCompiler = {
+  missingArgument: false, // l2ShippingCost()
+  wrongFormula: false, // total * 0.2 instead of total * 0.8
+  misspelledProperty: false, // order.totl instead of order.total
+  stringPassedToNumberParameter: false, // l2ShippingCost("80")
+  wrongComparison: false, // total > 50 instead of total >= 50
+};
+
+<!-- cell: markdown -->
+### Verification
+
+Run your exercise cell, then this cell. Every line should print `PASS`.
+
+<!-- cell: code verification -->
+checkAll([
+  ["an order of 80 ships free", l2ShippingCost(80), 0],
+  ["an order of exactly 50 ships free", l2ShippingCost(50), 0],
+  ["an order of 49.99 pays shipping", l2ShippingCost(49.99), 4.9],
+  ["missing argument", l2CaughtByCompiler.missingArgument, true],
+  ["wrong formula", l2CaughtByCompiler.wrongFormula, false],
+  ["misspelled property", l2CaughtByCompiler.misspelledProperty, true],
+  ["string passed to a number parameter", l2CaughtByCompiler.stringPassedToNumberParameter, true],
+  ["wrong comparison", l2CaughtByCompiler.wrongComparison, false],
+]);
+
+<!-- cell: markdown -->
+### Mini Challenge
+
+Is TypeScript worth it in each case? Answer in a comment, with one reason each.
+
+1. A 30-line script you'll run once to rename some photo files.
+2. A checkout module that four developers will maintain for years.
+3. A small library of currency functions that other teams install from npm.
+
+<!-- cell: code challenge -->
+// 1.
+// 2.
+// 3.
+
+<!-- cell: markdown -->
+## LESSON 3 — TypeScript in modern web development
+
+### Explanation
+
+TypeScript is now a standard choice for JavaScript projects:
+
+- **Front end.** React, Vue, Svelte and Angular all support TypeScript. Build tools such as
+  Vite handle `.ts` files out of the box.
+- **Back end.** Node.js, Deno and Bun run TypeScript servers and scripts.
+- **Libraries.** Many npm packages include **type definitions**: files that describe the
+  parameters and results of their functions. For packages written in plain JavaScript, the
+  community publishes them separately as `@types/...` packages. That's how your editor knows
+  how to call code you didn't write.
+
+**Running and checking are separate steps.** Fast tools such as Vite, Deno and recent
+versions of Node.js remove the types and run the code *without checking them*, just like
+this notebook. The type check is a separate command, which you'll run from LESSON 5. Real
+projects use both: the fast tool while developing, and the type check in the editor and
+before the code is released.
+
+### Key Notes
+
+- TypeScript is used for front ends, back ends and libraries.
+- Type definitions tell your editor and the compiler how to call a library.
+- Many tools run TypeScript by removing the types, without checking them.
+- The type check is a separate step. Run it before code is released.
+
+### Example
+
+Imagine `l3FormatMoney` comes from a library you installed. Its parameter types and names
+are all you need to call it correctly.
+
+<!-- cell: code example -->
+function l3FormatMoney(amountInCents: number, currency: string) {
+  return `${(amountInCents / 100).toFixed(2)} ${currency}`;
+}
+
+console.log(l3FormatMoney(1999, "EUR")); // prints 19.99 EUR
+
+<!-- cell: code type-error-demo -->
+// Type error on purpose.
+// Compiler: Argument of type 'string' is not assignable to parameter of type 'number'.
+console.log(l3FormatMoney("19.99", "EUR")); // prints 0.20 EUR
+
+<!-- cell: markdown -->
+### Exercise
+
+Complete `l3ReceiptLine` so it returns one line of a receipt, such as
+`"2 x Coffee beans: 25.80 EUR"`. The amount is the line total (unit price × quantity),
+formatted with `l3FormatMoney` from the Example. Read the parameter names before you start.
+
+Don't open `solutions.ipynb` until you've genuinely tried.
+
+<!-- cell: code starter -->
+function l3ReceiptLine(name: string, unitPriceInCents: number, quantity: number) {
+  // TODO: return a line like "2 x Coffee beans: 25.80 EUR", using l3FormatMoney
+  return "";
+}
+
+console.log(l3ReceiptLine("Coffee beans", 1290, 2));
+
+<!-- cell: markdown -->
+### Verification
+
+Run your exercise cell, then this cell. Every line should print `PASS`.
+
+<!-- cell: code verification -->
+checkAll([
+  ["two bags of coffee beans", l3ReceiptLine("Coffee beans", 1290, 2), "2 x Coffee beans: 25.80 EUR"],
+  ["one mug", l3ReceiptLine("Mug", 850, 1), "1 x Mug: 8.50 EUR"],
+  ["three stickers", l3ReceiptLine("Sticker", 99, 3), "3 x Sticker: 2.97 EUR"],
+]);
+
+<!-- cell: markdown -->
+### Mini Challenge
+
+Your team's shop runs on Vite. The page loads and works in the browser, but the type-check
+command reports 3 errors. Answer in comments:
+
+1. How can the page work when the code has type errors?
+2. Should the team ignore the errors because the page works? Why?
+3. Name two moments in the workflow when the type check should run.
+
+<!-- cell: code challenge -->
+// 1.
+// 2.
+// 3.

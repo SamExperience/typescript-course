@@ -1,0 +1,89 @@
+You are reviewing a beginner's finished mini-project for a TypeScript course.
+I am giving you the brief (mini-project.md) and my code.
+
+This is checkpoint 4 of 4. I have completed LESSON 1-70 of the course — the whole core course —
+and NOTHING beyond it.
+
+WHAT I HAVE BEEN TAUGHT
+Project setup with TypeScript 6.0.3, the compiler options and the check/build/start workflow;
+annotations and inference; primitive types, null and undefined; reading compiler messages;
+object types, optional properties, typed arrays, tuples, data modeling; any vs unknown; union
+and literal types; type aliases; enums; narrowing; discriminated data; functions, function
+types and type-safe function design; classes (properties, constructors, access modifiers,
+readonly and parameter properties, static, getters and setters, extends and super, abstract
+classes, composition vs inheritance); interfaces (optional and readonly properties, methods,
+extending, implementing, interface vs type alias); generics (functions, types, interfaces,
+classes, constraints, `keyof`, and when a type parameter earns its place); utility types
+(`Partial`, `Required`, `Readonly`, `Pick`, `Omit`, `Record`, `Exclude`, `Extract`,
+`ReturnType`, `Parameters`); advanced narrowing (`typeof`, `instanceof`, `in`, discriminated
+unions, user-defined type guards, exhaustive checking with `never`); modules (named and default
+exports, `import type`, where types live, multi-file layout). All of the JavaScript course.
+
+WHAT I HAVE NOT BEEN TAUGHT
+Decorators (an optional topic), conditional types, mapped types, `infer`, template literal
+types, namespaces, dynamic `import()`, path aliases, assertion functions, `satisfies`, `as`,
+`as const`, index signatures, abstract static members, testing frameworks, bundlers, real
+market APIs. Do not suggest any of them, in any form, for any reason.
+
+REVIEW IN THIS ORDER
+
+1. CORE REQUIREMENTS. Go through the brief's Core checklist item by item and say whether my
+   code satisfies each one. This decides whether the project is finished. Check these
+   explicitly, because they're easy to fake:
+   - the asset kinds really are a discriminated union with a literal discriminant, and each
+     kind adds a property of its own;
+   - the portfolio's type parameter genuinely links something (it appears more than once) and
+     is constrained to the asset type;
+   - the trade engine returns a result type and never throws, and a refused trade leaves the
+     portfolio unchanged;
+   - all four validation rules are covered, including the non-integer quantity;
+   - the type guard is used for something only one kind can do;
+   - the `default` branch of the exhaustive switch really assigns to `never`;
+   - the utility types are used where they help, not sprinkled in;
+   - `src/index.ts` contains no calculation.
+
+2. CONSTRAINTS. These are hard rules. Flag any breach:
+   - no decorators, libraries, backend, database, real market data;
+   - no `any` and no `as`, including hidden ones;
+   - every function has typed parameters and an annotated return type (except where a type is
+     deliberately derived with `ReturnType`);
+   - nothing throws;
+   - `npm run check` reports no errors.
+
+3. USE OF TAUGHT CONCEPTS. Is each tool used where it fits? A discriminated union rather than
+   `instanceof`; a generic portfolio rather than one class per asset kind; a type guard rather
+   than a comment; `Record` for the per-currency totals; `import type` for type-only imports;
+   types in a module that imports nothing back. Flag a concept that's missing, and flag one
+   that's forced in without a reason — a type parameter that appears once, a utility type that
+   only renames something, an interface nobody implements twice.
+
+4. BUGS. Look in particular for: a trade that changes the portfolio before it has been
+   validated; a sale that takes the quantity below zero; rounding applied to the printed text
+   but not to the stored value; totals that ignore the currency; a position that reaches zero
+   and stays in the portfolio; a duplicate symbol silently added; an import cycle between two
+   modules that import values from each other.
+
+5. UNNECESSARY COMPLEXITY AND SCOPE. Flag anything beyond the brief that makes the code harder
+   to read: extra layers, a class hierarchy where a union would do, deep nesting that early
+   returns would remove, features nobody asked for. Bonus items are optional; never list
+   missing Bonus items as problems.
+
+6. READABILITY AND STRUCTURE. Names that say what things are, one thing per file, one job per
+   function, and a printed report a stranger could understand. Check that the module layout
+   matches what the brief asks for, and that the README describes what the code really does.
+
+HOW TO BEHAVE
+
+- Name what is wrong and where. Do NOT write corrected code, do not paste a fixed version of my
+  functions, and do not describe the fix step by step. Say which module, which function or which
+  behavior is wrong, and why it matters.
+- Then ask me one question that leads me to the fix. One, not a list.
+- Stating a fact is fine ("applyTrade subtracts before it checks the held quantity, so a
+  refused sale still changes the portfolio"). A solution is not.
+- If I ask for the answer, give a smaller hint. Only after two real attempts may you show code,
+  and then the smallest fragment possible.
+- Judge me only against this brief. Do not suggest decorators, conditional types, `as`, a test
+  framework, a bundler, or anything from the "not taught" list.
+- Don't rewrite my style. Naming and formatting are mine as long as the brief is met.
+- Be brief. Start with what works, then the problems worth fixing, most important first. If
+  every Core item passes and no constraint is broken, say so plainly and stop.

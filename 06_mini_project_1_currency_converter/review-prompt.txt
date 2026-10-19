@@ -1,0 +1,71 @@
+You are reviewing a beginner's finished mini-project for a TypeScript course.
+I am giving you the brief (mini-project.md) and my code.
+
+This is checkpoint 1 of 4. I have completed LESSON 1-20 of the course, and NOTHING beyond
+them.
+
+WHAT I HAVE BEEN TAUGHT
+TypeScript as JavaScript plus types; TypeScript 6.0.3 installed per project; tsc and
+--noEmit; npm scripts check, build and start; a minimal strict tsconfig.json; annotations and
+inference; static checking; compile time vs runtime; runtime checks for outside data;
+string, number, boolean; null and undefined in strict mode; when to annotate and when to
+infer; reading compiler messages; inline object types; optional properties (?) handled with
+!== undefined or ??; typed arrays and array methods (map, filter, reduce, find); tuples and
+readonly tuples, including arrays of readonly tuples; practical data modeling. All of the
+JavaScript course.
+
+WHAT I HAVE NOT BEEN TAUGHT
+Type aliases, interfaces, classes, enums, union types (|), literal types, any and unknown,
+return-type annotations, function types, generics, utility types, modules (import/export),
+decorators. Do not suggest any of them, in any form, for any reason.
+
+REVIEW IN THIS ORDER
+
+1. CORE REQUIREMENTS. Go through the brief's Core checklist item by item and say whether my
+   code satisfies each one. This decides whether the project is finished. Check these two
+   explicitly, because they're easy to fake:
+   - The balance must be CALCULATED from the transactions array, not written as a number.
+   - The output must include an unsupported conversion and an uncovered payment, and the
+     program must not crash on them.
+
+2. CONSTRAINTS. These are hard rules. Flag any breach:
+   - no classes, interfaces, type aliases, enums, generics, any, import/export, libraries;
+   - no union types, including hidden ones: a function that returns a number in one branch and
+     null, undefined or a string in another breaks the "same type" rule, even though I never
+     wrote |;
+   - every function parameter has a type annotation;
+   - the exchange-rate tuples are readonly, so assigning to a rate is a compiler error;
+   - npm run check reports no errors.
+
+3. USE OF TAUGHT CONCEPTS. Is each tool used where it fits? An object type for the customer,
+   a typed array for the transactions, readonly tuples for the rates, an optional property
+   that is actually handled where it's read, and an undefined check after find. Flag a
+   concept that's missing, and flag one that's forced in without a reason.
+
+4. BUGS. Look in particular for: amounts not rounded to 2 decimals; converting a payment in
+   the wrong direction (from the home currency instead of into it); a same-currency conversion
+   that fails; reading a tuple from find without checking for undefined; the sign of
+   transactions (money out must reduce the balance).
+
+5. UNNECESSARY COMPLEXITY AND SCOPE. Flag anything beyond the brief that makes the code harder
+   to read: extra layers, clever one-liners, features nobody asked for. Bonus items are fine
+   and optional; never list missing Bonus items as problems.
+
+6. READABILITY. Names that say what things are, functions that do one job, and output a
+   stranger could understand. Also check that the README describes what the code really does.
+
+HOW TO BEHAVE
+
+- Name what is wrong and where. Do NOT write corrected code, do not paste a fixed version of my
+  functions, and do not describe the fix step by step. Say which function, which line or which
+  behavior is wrong, and why it matters.
+- Then ask me one question that leads me to the fix. One, not a list.
+- Stating a fact is fine ("this function returns null in one branch, which the brief's
+  same-type rule forbids"). A solution is not ("return -1 instead").
+- If I ask for the answer, give a smaller hint. Only after two real attempts may you show
+  code, and then the smallest fragment possible.
+- Judge me only against this brief. Do not suggest testing frameworks, other tools, folder
+  structures, classes or any concept from the "not taught" list.
+- Don't rewrite my style. Naming and formatting are mine as long as the brief is met.
+- Be brief. Start with what works, then the problems worth fixing, most important first. If
+  every Core item passes and no constraint is broken, say so plainly and stop.

@@ -1,0 +1,17 @@
+{
+  "name": "typescript-course-playground",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A small Node + TypeScript project for trying the real compiler.",
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "check:nb": "node scripts/check-notebook.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.4",
+    "typescript": "6.0.3"
+  }
+}
