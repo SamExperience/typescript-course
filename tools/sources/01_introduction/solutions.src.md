@@ -133,13 +133,29 @@ checkAll([
 ### Mini Challenge
 
 <!-- cell: code challenge-solution -->
-// 1. Probably not. It's short, runs once, and you can hold every detail in your head.
-// 2. Yes. Many functions, many changes and several people: the compiler checks every call
-//    after every change, and the types tell new developers how to use the code.
+const l2Cart = { items: 3, total: 120 };
+
+function l2CartDiscount(total: number) {
+  if (total >= 100) {
+    return total * 0.1;
+  }
+  return 0;
+}
+
+function l2FinalPrice(total: number) {
+  return total - l2CartDiscount(total); // a discount is subtracted, not added
+}
+
+console.log(l2FinalPrice(l2Cart.total)); // prints 108
 
 <!-- cell: markdown -->
-There is no single right answer for case 1. What matters is the reason: TypeScript's value
-grows with the size of the code, the number of people and how long it lives.
+- **Type error:** `l2Cart.totl` doesn't exist. The compiler reports it and even suggests
+  `total`. Without the fix, JavaScript passes `undefined` and the cell prints `NaN`.
+- **Logic error:** `total + discount` gives `132`. Every type is correct (a number plus a
+  number), so the compiler stays silent. Only running the code and comparing the result
+  with the rule finds it.
+
+That's the limit from the lesson: TypeScript checks types, you still check the logic.
 
 <!-- cell: markdown -->
 ## LESSON 3 — TypeScript in modern web development
@@ -182,12 +198,16 @@ checkAll([
 ### Mini Challenge
 
 <!-- cell: code challenge-solution -->
-// 1. Vite removes the types and runs the JavaScript without checking it, so type errors
-//    don't stop the page from loading.
-// 2. No. A type error often points to a real bug on a path nobody has tried yet, such as a
-//    string where a number belongs. The page working today doesn't prove it's correct.
+// Uses l3FormatMoney from the Exercise solution above.
+const l3Cart = { mugPriceInCents: "850", quantity: 2 };
+
+console.log(l3FormatMoney(Number(l3Cart.mugPriceInCents) * l3Cart.quantity, "EUR")); // prints 17.00 EUR
 
 <!-- cell: markdown -->
-The fast tool and the type check do different jobs. Using only the fast tool means you get
-JavaScript's silent mistakes back. Check types in the editor while you write, and run the
-type check before every release.
+`"850" * 2` works at runtime because `*` turns the string into a number. But the compiler
+reports it: the left side of `*` must be a number. `Number(...)` makes the conversion
+explicit, so the type check passes and the result stays `17.00 EUR`.
+
+This is the Vite situation in small: the code ran, so the bug looked fixed. With `+` instead
+of `*`, the same string would be joined instead of added. Run the type check before every
+release, not only the code.

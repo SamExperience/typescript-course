@@ -272,14 +272,28 @@ checkAll([
 <!-- cell: markdown -->
 ### Mini Challenge
 
-Is TypeScript worth it? Answer in a comment, with one reason each.
+The shop gives a **10% discount on orders of 100 EUR or more**. The cell below has two bugs:
+one the compiler reports, and one it can't see.
 
-1. A 30-line script you'll run once to rename some photo files.
-2. A checkout module that four developers will maintain for years.
+1. Run `check:nb` (the cell is listed as `[to fix]`) and fix the type error.
+2. Run the cell. For a 120 EUR cart it should print `108`. Find and fix the logic bug.
 
-<!-- cell: code challenge -->
-// 1.
-// 2.
+<!-- cell: code type-error-exercise -->
+// This cell has type errors on purpose. Fix them.
+const l2Cart = { items: 3, total: 120 };
+
+function l2CartDiscount(total: number) {
+  if (total >= 100) {
+    return total * 0.1;
+  }
+  return 0;
+}
+
+function l2FinalPrice(total: number) {
+  return total + l2CartDiscount(total);
+}
+
+console.log(l2FinalPrice(l2Cart.totl)); // should print 108
 
 <!-- cell: markdown -->
 ## LESSON 3 — TypeScript in modern web development
@@ -300,6 +314,9 @@ TypeScript is now a standard choice for JavaScript projects:
 and run the code *without checking them*, just like this notebook. The type check is a
 separate command (you'll run it from LESSON 5). Real projects use both: the fast tool while
 developing, and the type check in the editor and before releasing the code.
+
+So a page can work in the browser and still have type errors. Don't ignore them: a type
+error often points to a real bug that today's test simply didn't hit.
 
 ### Key Notes
 
@@ -357,12 +374,15 @@ checkAll([
 <!-- cell: markdown -->
 ### Mini Challenge
 
-Your team's shop runs on Vite. The page works in the browser, but the type check reports 3
-errors. Answer in comments:
+This is what happens in a real project: the code runs fine, but the type check fails.
 
-1. How can the page work if the code has type errors?
-2. Should the team ignore the errors because the page works? Why?
+1. Run the cell. The result looks right: `17.00 EUR`.
+2. Run `check:nb`. It reports an error in this cell (listed as `[to fix]`).
+3. Fix the code so the type check passes **and** the cell still prints `17.00 EUR`.
 
-<!-- cell: code challenge -->
-// 1.
-// 2.
+<!-- cell: code type-error-exercise -->
+// This cell has type errors on purpose. Fix them.
+// The price comes from the page, so it is a string.
+const l3Cart = { mugPriceInCents: "850", quantity: 2 };
+
+console.log(l3FormatMoney(l3Cart.mugPriceInCents * l3Cart.quantity, "EUR")); // prints 17.00 EUR
