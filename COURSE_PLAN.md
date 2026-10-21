@@ -453,6 +453,7 @@ required by any project or later core lesson.
 | 2026-09-15 | Node.js **24 or later** required | Verified: Node 24.20 runs `.ts` files directly (type stripping) with no warning; Node 24 is the active LTS |
 | 2026-09-15 | Topic 02 teaches a hand-written minimal `tsconfig.json` (`include: ["src"]`, `rootDir`, `outDir`, `strict`) and only *mentions* `tsc --init` | Verified: TS 6.0.3 `tsc --init` generates `module: nodenext`, `target: esnext`, `types: []`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, `jsx`, `declaration`, `sourceMap` — too much for beginners and it changes later lessons' behaviour |
 | 2026-09-15 | `ts-scratch` keeps `npm init -y`'s `"type": "commonjs"` until topic 17 (modules), where the module setup is decided and taught | Verified: the minimal config compiles single-file scripts that run fine under commonjs; module format belongs to LESSON 34 and topic 17 |
+| 2026-10-21 | Topic 01 (LESSON 1-3) simplified further; LESSON 2 and 3 Mini Challenges reduced to two questions | User feedback while taking the course: still too verbose. Same topics, exercises and verification cells; terms used before being explained (compiler, the inferred object type in a compiler message, type definitions) are now explained on first use. Content re-verified against current Node.js (type stripping stable) and TypeScript 7.0 docs |
 
 ### Verified facts for TypeScript 6.0.3 + Node 24.20 (topic 02 experiments, 2026-09-15)
 

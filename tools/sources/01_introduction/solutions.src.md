@@ -136,8 +136,6 @@ checkAll([
 // 1. Probably not. It's short, runs once, and you can hold every detail in your head.
 // 2. Yes. Many functions, many changes and several people: the compiler checks every call
 //    after every change, and the types tell new developers how to use the code.
-// 3. Yes. The types are the documentation other teams see in their editor, and the
-//    compiler reports it when they call your functions the wrong way.
 
 <!-- cell: markdown -->
 There is no single right answer for case 1. What matters is the reason: TypeScript's value
@@ -188,9 +186,8 @@ checkAll([
 //    don't stop the page from loading.
 // 2. No. A type error often points to a real bug on a path nobody has tried yet, such as a
 //    string where a number belongs. The page working today doesn't prove it's correct.
-// 3. In the editor while writing code, and by running the type-check command before the
-//    code is released (for example, before every commit or build).
 
 <!-- cell: markdown -->
 The fast tool and the type check do different jobs. Using only the fast tool means you get
-JavaScript's silent mistakes back.
+JavaScript's silent mistakes back. Check types in the editor while you write, and run the
+type check before every release.

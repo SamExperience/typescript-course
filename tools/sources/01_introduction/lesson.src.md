@@ -3,17 +3,16 @@
 
 > **How these notebooks work**
 >
-> - Each lesson has six parts: **Explanation**, **Key Notes**, **Example**, **Exercise**,
->   **Verification** and **Mini Challenge**.
 > - Run the cells from top to bottom, starting with the helper cell below.
-> - **Running a cell does not check types.** To see type errors, run this from the
->   `playground` folder (one-time setup in the README):
+> - **Running a cell does not check types.** The notebook just runs the code. To see type
+>   errors, open a terminal in the `playground` folder (one-time setup in the README) and run:
 >
 >   ```bash
 >   npm run check:nb -- ../01_introduction/lesson.ipynb
 >   ```
 >
->   Cells that start with `// Type error on purpose` are listed as `[expected]`.
+>   It lists every type error with its lesson, section and line. Cells that start with
+>   `// Type error on purpose` are listed as `[expected]`.
 
 <!-- cell: code setup -->
 // Course helper: run this cell once, before any Verification cell.
@@ -33,22 +32,20 @@ function checkAll(cases: [string, unknown, unknown][]): void {
 
 ### Explanation
 
-**TypeScript is JavaScript with types.** A type says what kind of value something is: a
-number, a string, an object. You add types to your code, and the **TypeScript compiler**
-checks them *before the code runs*.
+**TypeScript is JavaScript with types.** A **type** is the kind of value something is: a
+number, a string, an object.
 
-**Why it exists.** JavaScript often handles a wrong value silently:
+**The problem.** JavaScript doesn't stop you from using the wrong kind of value:
 
 ```typescript
 const price = "20"; // form fields give you strings
 console.log(price + 5); // prints 205, not 25
 ```
 
-Nothing crashes, so the bug goes unnoticed. In a large codebase, nobody remembers what every
-function expects. TypeScript writes those expectations into the code, and the compiler checks
-every call.
+No crash, no warning. The bug just slips through.
 
-**TypeScript vs JavaScript.** Same syntax, plus types. This is a **type annotation**:
+**The solution.** In TypeScript you write what kind of value you expect. This is a **type
+annotation**:
 
 ```typescript
 function addShipping(price: number, shipping: number) {
@@ -56,18 +53,20 @@ function addShipping(price: number, shipping: number) {
 }
 ```
 
-`price: number` means "this parameter must be a number", so `addShipping("20", 5)` is an
-error. For now you only need to read annotations. You'll write your own from LESSON 8.
+`price: number` means "`price` must be a number". The **TypeScript compiler**, a program that
+reads your code, then reports `addShipping("20", 5)` as an error *before the code runs*.
 
-**Types are removed before the code runs.** What actually runs is plain JavaScript. That's
-why a notebook cell with a type error still runs.
+For now you only need to *read* annotations. You'll write your own from LESSON 8.
+
+**Types disappear before the code runs.** They are removed, and what runs is plain
+JavaScript. That's why a notebook cell with a type error still runs.
 
 ### Key Notes
 
 - TypeScript = JavaScript + types.
-- The compiler reports type errors **before** the code runs.
 - `price: number` is a type annotation: only numbers are allowed.
-- Types are removed before running. At runtime, it's plain JavaScript.
+- The compiler reports type errors **before** the code runs.
+- At runtime, the types are gone: it's plain JavaScript.
 
 ### Example
 
@@ -81,7 +80,7 @@ function l1AddShipping(price: number, shipping: number) {
 }
 
 // Compiler: Argument of type 'string' is not assignable to parameter of type 'number'.
-console.log(l1AddShipping(l1PriceFromForm, l1Shipping)); // prints 205: the kernel runs it anyway
+console.log(l1AddShipping(l1PriceFromForm, l1Shipping)); // prints 205: the cell runs anyway
 
 <!-- cell: code example -->
 // The fix: turn the string into a number before the call.
@@ -95,8 +94,8 @@ A checkout form sends every value as a string. In the cell below:
 1. Complete `l1OrderTotal` so it returns `price * quantity + shipping`.
 2. Set `l1Total` by calling `l1OrderTotal` with the values from `l1Form`. The parameters are
    numbers, so convert the strings first.
-3. Try passing `l1Form.price` without converting it and run the cell. What prints? Put the
-   conversion back afterwards.
+3. Try passing `l1Form.price` without converting it and run the cell. What prints? Then put
+   the conversion back.
 
 Don't open `solutions.ipynb` until you've genuinely tried.
 
@@ -128,8 +127,7 @@ checkAll([
 <!-- cell: markdown -->
 ### Mini Challenge
 
-The cell below defines two annotated functions. For each call, predict: does the compiler
-report it, and what does JavaScript print?
+For each call, predict: does the compiler report it, and what does the cell print?
 
 ```text
 1. l1ApplyFee(100, 2)
@@ -138,11 +136,10 @@ report it, and what does JavaScript print?
 4. l1Discount(Number("80"), 25)
 ```
 
-Write your predictions as comments. Then test them: add the calls, run the cell, run
-`check:nb`, and delete the reported calls.
+Write your predictions as comments in the cell below. Then add the calls, run the cell, and
+run `check:nb` to compare.
 
-Last question: call 3 prints the correct discount. Why is it still good that the compiler
-reports it?
+Call 3 prints the right discount. Why is it still good that the compiler reports it?
 
 <!-- cell: code challenge -->
 function l1ApplyFee(amount: number, fee: number) {
@@ -160,33 +157,32 @@ function l1Discount(price: number, percent: number) {
 
 ### Explanation
 
-**Benefits**
+**What TypeScript gives you**
 
-- **Early errors.** Wrong value types, missing arguments and misspelled property names are
-  reported before the code runs.
-- **Editor help.** Your editor knows the types, so it suggests property names and underlines
-  mistakes as you type.
-- **Safer changes.** Rename a property or add a parameter, and the compiler lists every line
-  that needs updating.
-- **Types document the code.** `refund(orderId: string, amount: number)` tells you how to
-  call the function without reading its body.
+- **Early errors.** Wrong types, missing arguments and misspelled property names are reported
+  before the code runs.
+- **Editor help.** Your editor knows the types, so it suggests names and underlines mistakes
+  as you type.
+- **Safer changes.** Rename a property, and the compiler lists every line you need to update.
+- **Built-in documentation.** `refund(orderId: string, amount: number)` tells you how to call
+  the function without reading its code.
 
-**Limitations**
+**What it can't do**
 
-- **It doesn't check your logic.** `price * 0.2` and `price * 0.8` are both numbers. The
-  compiler can't know which one you meant.
-- **It doesn't check data while the program runs.** Form input and API responses arrive at
-  runtime, when the types are already gone. LESSON 11 covers this.
-- **It adds a step.** You write some extra syntax and run the compiler.
+- **Check your logic.** `price * 0.2` and `price * 0.8` are both numbers. The compiler can't
+  know which one you meant.
+- **Check data while the program runs.** Form input and API responses arrive at runtime, when
+  the types are already gone. More in LESSON 11.
 
-**When it's useful.** The bigger and longer-lived the code, the more TypeScript pays off:
-several developers, many functions calling each other, code that keeps changing. For a short
-script you run once, plain JavaScript is often enough.
+It also costs a little: some extra syntax, and one more command to run.
+
+**When it's worth it.** The bigger the code, the more people working on it and the longer it
+lives, the more TypeScript helps. For a short script you run once, JavaScript is often enough.
 
 ### Key Notes
 
 - The compiler catches type mistakes: wrong types, missing arguments, misspelled properties.
-- It doesn't catch logic mistakes. You still need checks and tests.
+- It doesn't catch logic mistakes. You still need tests.
 - Data that arrives at runtime isn't checked automatically.
 - TypeScript pays off most in large, shared, long-lived code.
 
@@ -194,13 +190,16 @@ script you run once, plain JavaScript is often enough.
 
 Three mistakes that JavaScript runs without complaint. The compiler reports all three.
 
+In the second message, `{ id: string; total: number; }` is how TypeScript describes
+`l2Order`: an object whose `id` is a string and whose `total` is a number. TypeScript works
+this out from the object's values (more in LESSON 8).
+
 <!-- cell: code type-error-demo -->
 // Type error on purpose (three of them).
 function l2Refund(orderId: string, amount: number) {
   return `Refund ${amount} EUR for order ${orderId}`;
 }
 
-// TypeScript works out this object's properties from its value (more in LESSON 8).
 const l2Order = { id: "A-100", total: 59.9 };
 
 // Compiler: Expected 2 arguments, but got 1.
@@ -228,10 +227,10 @@ console.log(l2ApplyDiscount(50)); // prints 10 instead of 40, and the compiler r
 
 The shop's rule: **orders of 50 EUR or more ship for free; smaller orders pay 4.90 EUR.**
 
-1. `l2ShippingCost` has no type errors, but it breaks that rule. Run the Verification cell to
+1. `l2ShippingCost` has no type errors, but it breaks the rule. Run the Verification cell to
    find the failing case, then fix the function.
-2. For each bug listed in `l2CaughtByCompiler`, set `true` if the compiler reports it, or
-   `false` if only a runtime check (like the Verification cell) would catch it.
+2. For each bug in `l2CaughtByCompiler`, write `true` if the compiler reports it, or `false`
+   if only a runtime check (like the Verification cell) would catch it.
 
 Don't open `solutions.ipynb` until you've genuinely tried.
 
@@ -273,16 +272,14 @@ checkAll([
 <!-- cell: markdown -->
 ### Mini Challenge
 
-Is TypeScript worth it in each case? Answer in a comment, with one reason each.
+Is TypeScript worth it? Answer in a comment, with one reason each.
 
 1. A 30-line script you'll run once to rename some photo files.
 2. A checkout module that four developers will maintain for years.
-3. A small library of currency functions that other teams install from npm.
 
 <!-- cell: code challenge -->
 // 1.
 // 2.
-// 3.
 
 <!-- cell: markdown -->
 ## LESSON 3 — TypeScript in modern web development
@@ -291,30 +288,29 @@ Is TypeScript worth it in each case? Answer in a comment, with one reason each.
 
 TypeScript is now a standard choice for JavaScript projects:
 
-- **Front end.** React, Vue, Svelte and Angular all support TypeScript. Build tools such as
-  Vite handle `.ts` files out of the box.
-- **Back end.** Node.js, Deno and Bun run TypeScript servers and scripts.
-- **Libraries.** Many npm packages include **type definitions**: files that describe the
-  parameters and results of their functions. For packages written in plain JavaScript, the
-  community publishes them separately as `@types/...` packages. That's how your editor knows
-  how to call code you didn't write.
+- **Front end:** React, Vue, Svelte and Angular support it. Build tools like Vite handle
+  `.ts` files out of the box.
+- **Back end:** Node.js, Deno and Bun run TypeScript.
+- **Libraries:** many npm packages come with **type definitions**: files that list the types
+  of their functions' parameters and results. When a package doesn't include them, you can
+  often install them separately as a `@types/...` package. That's how your editor knows how
+  to call code you didn't write.
 
-**Running and checking are separate steps.** Fast tools such as Vite, Deno and recent
-versions of Node.js remove the types and run the code *without checking them*, just like
-this notebook. The type check is a separate command, which you'll run from LESSON 5. Real
-projects use both: the fast tool while developing, and the type check in the editor and
-before the code is released.
+**Running is not checking.** Fast tools like Vite, Deno and recent Node.js remove the types
+and run the code *without checking them*, just like this notebook. The type check is a
+separate command (you'll run it from LESSON 5). Real projects use both: the fast tool while
+developing, and the type check in the editor and before releasing the code.
 
 ### Key Notes
 
 - TypeScript is used for front ends, back ends and libraries.
 - Type definitions tell your editor and the compiler how to call a library.
 - Many tools run TypeScript by removing the types, without checking them.
-- The type check is a separate step. Run it before code is released.
+- The type check is a separate step. Run it before releasing code.
 
 ### Example
 
-Imagine `l3FormatMoney` comes from a library you installed. Its parameter types and names
+Imagine `l3FormatMoney` comes from a library you installed. Its parameter names and types
 are all you need to call it correctly.
 
 <!-- cell: code example -->
@@ -332,9 +328,9 @@ console.log(l3FormatMoney("19.99", "EUR")); // prints 0.20 EUR
 <!-- cell: markdown -->
 ### Exercise
 
-Complete `l3ReceiptLine` so it returns one line of a receipt, such as
+Complete `l3ReceiptLine` so it returns one receipt line, such as
 `"2 x Coffee beans: 25.80 EUR"`. The amount is the line total (unit price × quantity),
-formatted with `l3FormatMoney` from the Example. Read the parameter names before you start.
+formatted with `l3FormatMoney`. Read the parameter names before you start.
 
 Don't open `solutions.ipynb` until you've genuinely tried.
 
@@ -361,14 +357,12 @@ checkAll([
 <!-- cell: markdown -->
 ### Mini Challenge
 
-Your team's shop runs on Vite. The page loads and works in the browser, but the type-check
-command reports 3 errors. Answer in comments:
+Your team's shop runs on Vite. The page works in the browser, but the type check reports 3
+errors. Answer in comments:
 
-1. How can the page work when the code has type errors?
+1. How can the page work if the code has type errors?
 2. Should the team ignore the errors because the page works? Why?
-3. Name two moments in the workflow when the type check should run.
 
 <!-- cell: code challenge -->
 // 1.
 // 2.
-// 3.
