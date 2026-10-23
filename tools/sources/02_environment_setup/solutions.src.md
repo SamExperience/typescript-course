@@ -46,17 +46,19 @@ prints `Version 6.0.3`, and `node_modules/typescript` exists.
 
 ### Mini Challenge
 
-<!-- cell: code challenge-solution -->
-// 1. "^6.0.3" allows any later 6.x version, such as 6.1.0. Two installs at different times
-//    can end up with different compilers.
-// 2. They ran a global tsc. Without npx, the terminal finds the globally installed
-//    compiler, which can be any version.
-// 3. With an exact version in package.json, every machine uses the same compiler, so a
-//    type error on one machine is a type error on every machine.
+<!-- practice: terminal -->
+1. `npm view typescript version` prints `7.0.2` (or newer): npm's newest TypeScript is not
+   the course version.
+2. Without `--save-exact`, `package.json` says `"typescript": "^6.0.3"`. A future install
+   could pick a later `6.x` compiler.
+3. Install again with the flag:
 
-<!-- cell: markdown -->
-A newer compiler can report errors an older one didn't. Pinning the version keeps
-"it compiles on my machine" true for the whole team.
+   ```bash
+   npm install --save-dev --save-exact typescript@6.0.3
+   npx tsc --version
+   ```
+
+   `package.json` says `"6.0.3"` and `npx tsc --version` prints `Version 6.0.3`.
 
 <!-- cell: markdown -->
 ## LESSON 5 — The compiler (`tsc`) and running TypeScript files
@@ -109,17 +111,23 @@ A newer compiler can report errors an older one didn't. Pinning the version keep
 
 ### Mini Challenge
 
-<!-- cell: code challenge-solution -->
-// 1. The problem is in invoice.ts, at line 12, column 7, and TS2345 is the kind of error
-//    (a value of the wrong type passed to a parameter).
-// 2. node removes the types and runs the file without checking them. Running without an
-//    error proves nothing about types. Use npx tsc --noEmit invoice.ts to check.
-// 3. node runs invoice.js, the old compiled output. The fix is only in invoice.ts until you
-//    run npx tsc invoice.ts again.
+<!-- practice: terminal -->
+1. `node invoice.ts` prints `60`: JavaScript turned `"25"` into a number. `node` removes the
+   types and never checks them.
+2. The check reports:
 
-<!-- cell: markdown -->
-Compiling and running are separate steps, and so are checking and running. Each command
-does one job.
+   ```text
+   invoice.ts(5,31): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+   ```
+
+3. The fixed call:
+
+   ```typescript
+   console.log(applyDiscount(80, 25));
+   ```
+
+   `npx tsc --noEmit invoice.ts` now prints nothing. Running without errors proves nothing
+   about types: only `tsc` checks them.
 
 <!-- cell: markdown -->
 ## LESSON 6 — Basic project structure
@@ -178,17 +186,18 @@ npm start
 
 ### Mini Challenge
 
-<!-- cell: code challenge-solution -->
-// 1. In Git: src/index.ts, package.json, package-lock.json and .gitignore.
-//    Not in Git: dist/index.js and node_modules/, because both are generated.
-// 2. The fix is lost. The build overwrites dist/index.js from src/index.ts, which still
-//    has the bug. Fixes always go in src/.
-// 3. No. The build script only names src/index.ts, so tsc compiles that file and nothing
-//    else. Every new file would have to be added to the command.
+<!-- practice: terminal -->
+1. `npm start` prints `TOTAL: 42.50 EUR`: it runs the edited `dist/index.js`.
+2. After `npm run build`, `npm start` prints `Order total: 42.50 EUR` again. The build
+   rewrote `dist/index.js` from `src/index.ts`, so the edit is gone.
+3. Change the text in `src/index.ts`:
 
-<!-- cell: markdown -->
-Question 3 is the reason for the next lesson: a `tsconfig.json` tells `tsc` which folder to
-compile, so new files are picked up automatically.
+   ```typescript
+   console.log(`TOTAL: ${formatPrice(42.5)}`);
+   ```
+
+   After `npm run build` and `npm start`, the change stays. Fixes always go in `src/`.
+   Put `Order total` back before LESSON 7.
 
 <!-- cell: markdown -->
 ## LESSON 7 — A first `tsconfig.json`
@@ -247,13 +256,24 @@ the compiler, so it reports TS7006 at line 1, column 36.
 
 ### Mini Challenge
 
-<!-- cell: code challenge-solution -->
-// 1. The script passes a file name while a tsconfig.json exists, and tsc doesn't allow
-//    mixing the two ways of saying what to compile.
-// 2. In dist/reports/daily.js. rootDir and outDir keep the folder structure: src/ maps to
-//    dist/, so src/reports/ maps to dist/reports/.
-// 3. Each extra error points to a place where the compiler would otherwise have to guess a
-//    type. Fixing it now is cheaper than finding the bug at runtime.
+<!-- practice: terminal -->
+1. and 2. The compiled file keeps the folder structure: `src/reports/daily.ts` becomes
+   `dist/reports/daily.js`.
+
+   ```bash
+   npm run build
+   node dist/reports/daily.js
+   ```
+
+   prints `Monday: 350.00 EUR`.
+
+3. `npx tsc src/index.ts` prints:
+
+   ```text
+   error TS5112: tsconfig.json is present but will not be loaded if files are specified on commandline. Use '--ignoreConfig' to skip this error.
+   ```
+
+   With a tsconfig, run `npx tsc` without file names.
 
 <!-- cell: markdown -->
 Your `ts-scratch` project now has the setup you'll reuse later: `src/`, `dist/`, a minimal

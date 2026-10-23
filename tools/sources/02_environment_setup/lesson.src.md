@@ -3,13 +3,8 @@
 
 > **How this topic works**
 >
-> In this topic you install and run TypeScript in a real project, so most of the practice
-> happens in a **terminal**, not in the notebook. Sections marked *Practice in the terminal*
-> tell you exactly what to run and what you should see. Mini Challenges are still answered
-> in the notebook.
->
-> You'll build one small project, `ts-scratch`, and keep using it later in the course.
-> Create it **beside** the course folder, never inside it:
+> You practise in a **terminal**, not in the notebook. You'll build one small project,
+> `ts-scratch`, and reuse it later. Create it **beside** the course folder, never inside it:
 >
 > ```text
 > your-projects-folder/
@@ -22,40 +17,42 @@
 
 ### Explanation
 
-Real TypeScript projects run on **Node.js** and use **npm**, which you already know from the
-JavaScript course. This course needs **Node.js 24 or later**.
+TypeScript projects run on **Node.js** and use **npm**, which you know from the JavaScript
+course. This course needs **Node.js 24 or later**.
 
-TypeScript itself is an npm package called `typescript`. It contains the compiler, **`tsc`**.
-Install it in each project like this:
+The TypeScript **compiler** is called **`tsc`**. It checks your types and turns `.ts` files
+into `.js` files. That second step is called **compiling**. `tsc` comes in the npm package
+`typescript`, and you install it in each project:
 
 ```bash
+npm init -y
 npm install --save-dev --save-exact typescript@6.0.3
 ```
 
-- `--save-dev`: the compiler is a development tool. Your running app doesn't need it.
-- `--save-exact`: saves exactly `6.0.3` in `package.json`, not `^6.0.3`. Everyone on the
-  project gets the same compiler, and therefore the same errors.
-- `@6.0.3`: the version this course uses.
+- `npm init -y` creates `package.json`, the project's ID card. `-y` accepts every default.
+- `npm install` downloads the package into the **`node_modules`** folder.
+- `--save-dev` records it under **`devDependencies`**: tools you need while you write code,
+  not when the app runs.
+- `@6.0.3` is the version this course uses.
+- `--save-exact` saves exactly `"6.0.3"`. Without it npm saves `"^6.0.3"`, and the `^` lets
+  npm install any later `6.x` version.
 
-Run the project's compiler with **`npx`**, which uses the copy inside `node_modules`:
+Why an exact version? npm's newest TypeScript is already 7, and different versions can
+report different errors. With the same version, everyone sees the same errors.
 
-```bash
-npx tsc --version
-```
-
-Avoid installing TypeScript globally (`npm install -g typescript`). A global `tsc` can be a
-different version on every machine.
+Run the compiler with **`npx tsc`**. `npx` uses the copy in `node_modules`. A plain `tsc`
+could find a different version installed globally on your computer.
 
 ### Key Notes
 
-- TypeScript is the npm package `typescript`; its compiler is `tsc`.
-- Install it per project: `--save-dev --save-exact`.
-- Run it with `npx tsc`, so you always use the project's version.
+- `tsc` checks types and compiles `.ts` into `.js`.
+- Install it per project with `--save-dev --save-exact`.
+- Always run it as `npx tsc`.
 
 ### Example
 
 <!-- practice: terminal -->
-*Practice in the terminal.* Creating a project and installing TypeScript:
+*Practice in the terminal:*
 
 ```bash
 node --version
@@ -66,7 +63,8 @@ npm install --save-dev --save-exact typescript@6.0.3
 npx tsc --version
 ```
 
-`node --version` must print `v24` or higher. The last command prints `Version 6.0.3`. `package.json` now contains:
+`node --version` prints `v24` or higher, and the last command prints `Version 6.0.3`.
+`package.json` now contains:
 
 ```json
 "devDependencies": {
@@ -89,26 +87,21 @@ Don't open `solutions.ipynb` until you've genuinely tried.
 ### Verification
 
 <!-- practice: terminal -->
-From inside `ts-scratch`, check all three:
+From inside `ts-scratch`:
 
 - `npx tsc --version` prints `Version 6.0.3`.
 - `package.json` lists `"typescript": "6.0.3"` under `devDependencies`, with no `^`.
-- A folder `node_modules/typescript` exists.
+- The folder `node_modules/typescript` exists.
 
 ### Mini Challenge
 
-Answer in comments:
+<!-- practice: terminal -->
+*Practice in the terminal.* See the `^` for yourself:
 
-1. A teammate's `package.json` says `"typescript": "^6.0.3"`. What does the `^` allow npm to
-   install?
-2. Your teammate types `tsc --version` (without `npx`) and sees a different version from
-   yours. What is the most likely reason?
-3. Why is an exact, per-project version better for a team than a global install?
-
-<!-- cell: code challenge -->
-// 1.
-// 2.
-// 3.
+1. Run `npm view typescript version`. It prints npm's newest TypeScript.
+2. Run `npm install --save-dev typescript@6.0.3` (without `--save-exact`) and look at
+   `package.json`.
+3. Fix it so `package.json` says `"6.0.3"` again, then check with `npx tsc --version`.
 
 <!-- cell: markdown -->
 ## LESSON 5 — The compiler (`tsc`) and running TypeScript files
@@ -118,18 +111,18 @@ Answer in comments:
 There are two ways to run a `.ts` file:
 
 1. **Compile, then run.** `npx tsc price.ts` checks the file and writes `price.js` next to
-   it. Then `node price.js` runs the JavaScript.
+   it. Then `node price.js` runs that JavaScript.
 2. **Run directly.** `node price.ts` removes the types and runs the file. It does **not**
    check them.
 
-To check without writing any files, add `--noEmit` ("emit" means "write output files"):
+To check without writing any file, add `--noEmit` ("emit" means "write output files"):
 
 ```bash
 npx tsc --noEmit price.ts
 ```
 
-**Watch out:** when `tsc` finds a type error, it reports the error **and still writes the
-`.js` file**. Read the output before you run the result.
+**Watch out:** when `tsc` finds a type error, it reports it **and still writes the `.js`
+file**. Read the output before you run the result.
 
 A type error looks like this:
 
@@ -137,15 +130,14 @@ A type error looks like this:
 price.ts(6,20): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
 ```
 
-`price.ts` is the file, `6` the line and `20` the column. `TS2345` is the error code, followed
-by the message. If `tsc` prints nothing, there are no errors.
+File `price.ts`, line `6`, column `20`. `TS2345` is the error code, then the message. If
+`tsc` prints nothing, there are no errors.
 
 ### Key Notes
 
-- `npx tsc file.ts` checks the file and writes `file.js`, even when there are errors.
+- `npx tsc file.ts` checks and writes `file.js`, even when there are errors.
 - `npx tsc --noEmit file.ts` only checks.
-- `node file.ts` runs the file without checking it.
-- Errors read as `file(line,column): error code: message`.
+- `node file.ts` runs without checking.
 
 ### Example
 
@@ -169,9 +161,9 @@ npx tsc price.ts
 price.ts(6,20): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
 ```
 
-`price.js` is written anyway. Both `node price.js` and `node price.ts` print `122` twice:
-JavaScript turned `"100"` into a number, so the result looks right. The compiler reports the
-call regardless, because a string is not what `addVat` expects.
+`price.js` is written anyway, and `node price.js` prints `122` twice: JavaScript turned
+`"100"` into a number. The result looks right, but `addVat` expects a number, so the
+compiler reports the call.
 
 ### Exercise
 
@@ -198,7 +190,7 @@ Don't open `solutions.ipynb` until you've genuinely tried.
 
 <!-- practice: terminal -->
 - `npx tsc --noEmit receipt.ts` prints nothing.
-- After `npx tsc receipt.ts`, running `node receipt.js` prints:
+- After `npx tsc receipt.ts`, `node receipt.js` prints:
 
 ```text
 Total: 25.00 EUR
@@ -207,43 +199,48 @@ Total: 25.00 EUR
 
 ### Mini Challenge
 
-Answer in comments:
+<!-- practice: terminal -->
+*Practice in the terminal.* Create `invoice.ts`:
 
-1. What does `invoice.ts(12,7): error TS2345` tell you, even before you read the message?
-2. A teammate says: "`node invoice.ts` ran without any error, so the types are fine." What's
-   wrong with that reasoning?
-3. You fixed a type error in `invoice.ts`, then ran `node invoice.js` without compiling
-   again. The bug is still there. Why?
+```typescript
+function applyDiscount(price: number, percent: number) {
+  return price - (price * percent) / 100;
+}
 
-<!-- cell: code challenge -->
-// 1.
-// 2.
-// 3.
+console.log(applyDiscount(80, "25"));
+```
+
+1. Run `node invoice.ts`. It prints `60` with no complaint.
+2. Run `npx tsc --noEmit invoice.ts`. Now the error appears.
+3. Fix the call, and run the check again until it prints nothing.
 
 <!-- cell: markdown -->
 ## LESSON 6 — Basic project structure
 
 ### Explanation
 
-Once a project has more than one file, give it a standard shape:
+With more than one file, give the project a standard shape:
 
 ```text
 ts-scratch/
-├── src/            the TypeScript you write
+├── src/                the TypeScript you write
 │   └── index.ts
-├── dist/           the JavaScript tsc generates
-├── node_modules/   installed packages
+├── dist/               the JavaScript tsc generates
+├── node_modules/       installed packages
 ├── package.json
+├── package-lock.json
 └── .gitignore
 ```
 
-- **`src/`** ("source") holds your `.ts` files. This is what you edit and commit.
-- **`dist/`** ("distribution") holds the compiled `.js` files. `tsc` rewrites them on every
-  build, so never edit them by hand.
-- **`.gitignore`** lists `node_modules` and `dist`, because both are generated and can be
-  recreated at any time.
+- **`src/`** ("source"): your `.ts` files. This is what you edit.
+- **`dist/`** ("distribution"): the compiled `.js` files. `tsc` rewrites them on every build,
+  so never edit them by hand.
+- **`package-lock.json`**: written by npm. It records the exact version of every installed
+  package. Keep it in Git.
+- **`.gitignore`**: lists `node_modules` and `dist`. Both are generated, so they stay out of
+  Git.
 
-`--outDir dist` tells `tsc` where to write the JavaScript. Put the long commands in
+`--outDir dist` tells `tsc` where to write the JavaScript. Save the long commands as
 **npm scripts** in `package.json`:
 
 ```json
@@ -253,14 +250,13 @@ ts-scratch/
 }
 ```
 
-Now `npm run build` compiles and `npm start` runs the result. Listing files in a command
-gets awkward as the project grows. LESSON 7 fixes that with `tsconfig.json`.
+Now `npm run build` compiles and `npm start` runs the result. Note that `build` names one
+file only: LESSON 7 fixes that with `tsconfig.json`.
 
 ### Key Notes
 
 - `src/` is what you write; `dist/` is what `tsc` generates.
-- Never edit or commit `dist/` or `node_modules/`.
-- `--outDir dist` sets where compiled files go.
+- Never edit `dist/`. Keep `dist/` and `node_modules/` out of Git.
 - npm scripts turn long commands into `npm run build` and `npm start`.
 
 ### Example
@@ -283,7 +279,7 @@ npm run build
 npm start
 ```
 
-`npm run build` creates `dist/index.js` and reports no errors. `npm start` prints:
+`npm run build` creates `dist/index.js` with no errors. `npm start` prints:
 
 ```text
 Order total: 42.50 EUR
@@ -294,7 +290,8 @@ Order total: 42.50 EUR
 <!-- practice: terminal -->
 *Practice in the terminal.* Reorganize `ts-scratch`:
 
-1. Delete the LESSON 5 files: `price.ts`, `price.js`, `receipt.ts` and `receipt.js`.
+1. Delete the LESSON 5 files: `price.ts`, `price.js`, `receipt.ts`, `receipt.js` and
+   `invoice.ts`.
 2. Create `src/index.ts` with the code from the Example.
 3. Add the `build` and `start` scripts to `package.json`. Keep the existing `test` script.
 4. Create `.gitignore` so Git ignores `node_modules` and `dist`.
@@ -305,25 +302,18 @@ Don't open `solutions.ipynb` until you've genuinely tried.
 ### Verification
 
 <!-- practice: terminal -->
-- The project root contains no `.ts` or `.js` files. They all live in `src/` and `dist/`.
+- The project root has no `.ts` or `.js` files. They live in `src/` and `dist/`.
 - `npm run build` creates `dist/index.js` with no errors.
 - `npm start` prints `Order total: 42.50 EUR`.
 
 ### Mini Challenge
 
-Answer in comments:
+<!-- practice: terminal -->
+*Practice in the terminal.* Prove that edits to `dist/` get lost:
 
-1. Which of these belong in Git? `src/index.ts`, `dist/index.js`, `node_modules/`,
-   `package.json`, `package-lock.json`, `.gitignore`.
-2. A teammate fixes a bug by editing `dist/index.js` directly. What happens to the fix after
-   the next `npm run build`?
-3. You add a second file, `src/report.ts`, and run `npm run build`. Is `dist/report.js`
-   created? Why?
-
-<!-- cell: code challenge -->
-// 1.
-// 2.
-// 3.
+1. In `dist/index.js`, change `Order total` to `TOTAL`, then run `npm start`.
+2. Run `npm run build`, then `npm start` again. Where did your edit go?
+3. Make the same change the right way, in `src/index.ts`, and rebuild.
 
 <!-- cell: markdown -->
 ## LESSON 7 — A first `tsconfig.json`
@@ -331,7 +321,7 @@ Answer in comments:
 ### Explanation
 
 A **`tsconfig.json`** file in the project root holds the compiler's settings. Once it
-exists, plain `npx tsc` compiles the whole project, with no file names needed.
+exists, a plain `npx tsc` compiles the whole project, with no file names.
 
 This is all you need for now:
 
@@ -348,11 +338,12 @@ This is all you need for now:
 
 - **`include`**: which files to compile. Here, everything in `src/`.
 - **`rootDir`** and **`outDir`**: where the source lives and where the JavaScript goes.
-  `src/index.ts` becomes `dist/index.js`.
-- **`strict`**: turns on the compiler's strictest checks. For example, a parameter without a
-  type becomes an error. This course always uses strict mode.
+  `src/index.ts` becomes `dist/index.js`, and subfolders are kept.
+- **`strict`**: turns on the strictest checks. For example, a parameter with no type is an
+  error, because the compiler would have to give it type **`any`**, which means "any value,
+  not checked". This course always uses strict mode.
 
-The scripts get shorter too:
+The scripts get shorter:
 
 ```json
 "scripts": {
@@ -365,16 +356,15 @@ The scripts get shorter too:
 Two things to know:
 
 - With a `tsconfig.json` present, `npx tsc src/index.ts` fails with error **TS5112**. Use
-  either file names or a tsconfig, not both.
-- `npx tsc --init` generates a much longer tsconfig with many extra options. This course
-  uses the short one above. Topic 10 explains the options properly.
+  file names or a tsconfig, not both.
+- `npx tsc --init` generates a much longer tsconfig. This course uses the short one above.
+  Topic 10 explains the options.
 
 ### Key Notes
 
 - `tsconfig.json` tells `tsc` what to compile and where to put the output.
-- `include`, `rootDir` and `outDir` map `src/` to `dist/`.
 - Keep `strict: true`.
-- Run `npx tsc` without file names once a tsconfig exists.
+- With a tsconfig, run `npx tsc` without file names.
 
 ### Example
 
@@ -386,8 +376,8 @@ npm run check
 npm run build
 ```
 
-`npm run check` reports no errors. `npm run build` compiles **every** file in `src/`, so
-`dist/` now contains `index.js` and `report.js`. New files are picked up automatically.
+`npm run build` compiles **every** file in `src/`: `dist/` gets `index.js` and `report.js`.
+New files are picked up automatically.
 
 ### Exercise
 
@@ -426,14 +416,18 @@ src/report.ts(1,36): error TS7006: Parameter 'amount' implicitly has an 'any' ty
 
 ### Mini Challenge
 
-Answer in comments:
+<!-- practice: terminal -->
+*Practice in the terminal.*
 
-1. A teammate changes the `build` script back to `tsc src/index.ts` and gets error TS5112.
-   Explain what went wrong in one sentence.
-2. You add `src/reports/daily.ts`. Where does its compiled file end up?
-3. Strict mode gives you more errors. Why is that a good thing?
+1. Create `src/reports/daily.ts`:
 
-<!-- cell: code challenge -->
-// 1.
-// 2.
-// 3.
+   ```typescript
+   function dailyLine(day: string, amount: number) {
+     return `${day}: ${amount.toFixed(2)} EUR`;
+   }
+
+   console.log(dailyLine("Monday", 350));
+   ```
+
+2. Run `npm run build`. Find the compiled file in `dist/` and run it with `node`.
+3. Run `npx tsc src/index.ts` and read the error code.
